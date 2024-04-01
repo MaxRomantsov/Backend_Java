@@ -2,16 +2,18 @@ package org.example.controllers;
 
 import lombok.AllArgsConstructor;
 import org.example.entities.CategoryEntity;
-import org.example.dto.CategoryEditDTO;
+import org.example.dto.category.CategoryCreateDTO;
+import org.example.dto.category.CategoryEditDTO;
+import org.example.dto.category.CategoryItemDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
-import org.example.dto.CategoryItemDTO;
 import org.springframework.web.bind.annotation.*;
-import org.example.dto.CategoryCreateDTO;
+import org.example.dto.category.CategoryCreateDTO;
 import org.example.services.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.example.dto.category.CategorySearchResultDTO;
 
 
 
@@ -23,9 +25,10 @@ public class CategoryController {
 
 
     @GetMapping
-    public ResponseEntity<Page<CategoryItemDTO>> index(Pageable pageable) {
-        Page<CategoryItemDTO> categories = categoryService.getAllCategories(pageable);
-        return ResponseEntity.ok(categories);
+    public ResponseEntity<CategorySearchResultDTO> index(Pageable pageable) {
+        var result = categoryService.getAllCategories(pageable);
+
+        return ResponseEntity.ok(result);
     }
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CategoryItemDTO> create(@ModelAttribute CategoryCreateDTO model) {
@@ -62,17 +65,13 @@ public class CategoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @GetMapping("/search")
-    public ResponseEntity<Page<CategoryEntity>> searchCategories(
+    public ResponseEntity<CategorySearchResultDTO> searchCategories(
             @RequestParam (defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
 
-        Page<CategoryEntity> searchResult = categoryService.searchCategories(keyword, page, size);
 
-//        if (searchResult.isEmpty()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-
+        var searchResult = categoryService.searchCategories(keyword, page, size);
         return new ResponseEntity<>(searchResult, HttpStatus.OK);
     }
 
