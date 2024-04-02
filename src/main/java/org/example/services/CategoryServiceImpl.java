@@ -14,8 +14,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.example.dto.common.SelectItemDTO;
+import org.example.dto.product.ProductItemDTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -99,5 +103,15 @@ public class CategoryServiceImpl implements CategoryService {
         searchResult.setList(categoryMapper.categoryItemDTOList(result.getContent()));
         searchResult.setTotalCount((int)result.getTotalElements());
         return searchResult;
+    }
+    @Override
+    public List<SelectItemDTO> getNames() {
+        var products = categoryRepository.findAll().stream()
+                .map(category -> {
+                    var dto = categoryMapper.selectItemDTO(category);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return products;
     }
 }

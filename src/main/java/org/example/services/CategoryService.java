@@ -6,6 +6,9 @@ import org.example.dto.category.CategoryItemDTO;
 import org.example.dto.category.CategorySearchResultDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.example.dto.common.SelectItemDTO;
+
+import java.util.List;
 
 public interface CategoryService {
     CategorySearchResultDTO getAllCategories(Pageable pageable);
@@ -14,6 +17,7 @@ public interface CategoryService {
     CategoryItemDTO create(CategoryCreateDTO model);
     CategoryItemDTO edit(CategoryEditDTO model);
     CategorySearchResultDTO searchCategories(String keyword, int page, int size);
+    List<SelectItemDTO> getNames();
 
 
 }

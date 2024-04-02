@@ -7,6 +7,7 @@ import org.example.entities.CategoryEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 import org.mapstruct.Mapping;
+import org.example.dto.common.SelectItemDTO;
 
 import java.util.List;
 
@@ -22,4 +23,5 @@ public interface CategoryMapper {
 
     @Mapping(target = "image", ignore = true)
     CategoryEntity categoryEditDto(CategoryEditDTO dto);
+    SelectItemDTO selectItemDTO(CategoryEntity category);
 }

@@ -14,8 +14,9 @@ import org.example.services.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.example.dto.category.CategorySearchResultDTO;
+import org.example.dto.common.SelectItemDTO;
 
-
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -28,6 +29,12 @@ public class CategoryController {
     public ResponseEntity<CategorySearchResultDTO> index(Pageable pageable) {
         var result = categoryService.getAllCategories(pageable);
 
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("names")
+    public ResponseEntity<List<SelectItemDTO>> names() {
+        var result = categoryService.getNames();
         return ResponseEntity.ok(result);
     }
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
