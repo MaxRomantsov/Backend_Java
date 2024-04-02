@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import org.example.dto.product.ProductSearchResultDTO;
+import static org.example.specifications.ProductEntitySpecifications.*;
 
 @Service
 @AllArgsConstructor
@@ -88,11 +89,13 @@ public class ProductServiceImpl implements ProductService {
         {
             try {
                 var product = p.get();
-                var imagesDb = product.getProductImages();
-                for (var image : imagesDb) {
-                    if (!isAnyImage(model.getOldPhotos(), image)) {
-                        productImageRepository.delete(image);
-                        storageService.deleteImage(image.getName());
+                if(!model.getOldPhotos().isEmpty()) {
+                    var imagesDb = product.getProductImages();
+                    for (var image : imagesDb) {
+                        if (isAnyImage(model.getOldPhotos(), image)) {
+                            productImageRepository.delete(image);
+                            storageService.deleteImage(image.getName());
+                        }
                     }
                 }
                 var cat = new CategoryEntity();
@@ -133,10 +136,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductSearchResultDTO searchProducts(
-            String keywordName, String keywordCategory, String keywordDescription, int page, int size) {
-        Page<ProductEntity> result = productRepository.searchProducts(
-                "%" + keywordName + "%", "%" + keywordCategory + "%", "%" + keywordDescription + "%",
-                PageRequest.of(page, size));
+            String name, int categoryId,
+            String description, int page, int size) {
+//        Page<ProductEntity> result = productRepository.searchProducts(
+//                "%" + keywordName + "%", "%" + keywordCategory + "%", "%" + keywordDescription + "%",
+//                PageRequest.of(page, size));
+
+        Page<ProductEntity> result = productRepository
+                .findAll(
+                        findByCategoryId(categoryId).and(findByName(name)).and(findByDescription(description)),
+                        PageRequest.of(page, size));
 
         List<ProductItemDTO> products = result.getContent().stream()
                 .map(product -> {
@@ -152,6 +161,17 @@ public class ProductServiceImpl implements ProductService {
 
         return new ProductSearchResultDTO(products, (int) result.getTotalElements());
     }
+    @Override
+    public ProductItemDTO getById(Integer productId) {
+        var entity = productRepository.findById(productId).orElse(null);
+        if (entity == null) {
+            return null;
+        }
 
+        var product = productMapper.ProductItemDTOByProduct(entity);
+        product.setFiles(productImageRepository.findImageNamesByProduct(entity));
+
+        return product;
+    }
 
 }

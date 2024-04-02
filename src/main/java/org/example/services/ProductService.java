@@ -13,6 +13,7 @@ public interface ProductService {
 
     ProductItemDTO edit(ProductEditDTO model);
 
-    public ProductSearchResultDTO searchProducts(String keywordName, String keywordCategory,
-                                                 String keywordDescription, int page, int size);
+    ProductItemDTO getById(Integer productId);
+    ProductSearchResultDTO searchProducts(String name, int categoryId,
+                                          String description, int page, int size);
 }
