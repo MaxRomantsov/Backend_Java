@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.example.dto.account.RegisterDTO;
 
 @RestController
 @RequestMapping("api/account")
@@ -18,13 +19,30 @@ public class AccountController {
     private final AccountService service;
 
     @PostMapping("login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto dto) {
+    public ResponseEntity<Object> login(@RequestBody LoginDto dto) {
         try {
             var auth = service.login(dto);
             return ResponseEntity.ok(auth);
         }
         catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.badRequest().body("Невірно введені дані! Спробуйте ще раз!");
+        }
+    }
+    @PostMapping("register")
+    public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterDTO dto) {
+        try {
+            if(!dto.getPassword().equals(dto.getConfirmPassword()))
+            {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            var auth = service.register(dto);
+
+            return ResponseEntity.ok(auth);
+
+        }
+        catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }
