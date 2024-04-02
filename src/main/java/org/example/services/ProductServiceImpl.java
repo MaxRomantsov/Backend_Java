@@ -89,14 +89,19 @@ public class ProductServiceImpl implements ProductService {
         {
             try {
                 var product = p.get();
-                if(!model.getOldPhotos().isEmpty()) {
-                    var imagesDb = product.getProductImages();
-                    for (var image : imagesDb) {
-                        if (isAnyImage(model.getOldPhotos(), image)) {
-                            productImageRepository.delete(image);
-                            storageService.deleteImage(image.getName());
-                        }
+                var imagesDb = product.getProductImages();
+                //Видаляємо фото, якщо потрібно
+                for (var image : imagesDb) {
+                    if (!isAnyImage(model.getOldPhotos(), image)) {
+                        productImageRepository.delete(image);
+                        storageService.deleteImage(image.getName());
                     }
+                }
+                //Оновляємо пріорітет фото у списку
+                for(var old : model.getOldPhotos()) {
+                    var imgUpdate = productImageRepository.findByName(old.getPhoto());
+                    imgUpdate.setPriority(old.getPriority());
+                    productImageRepository.save(imgUpdate);
                 }
                 var cat = new CategoryEntity();
                 cat.setId(model.getCategory_id());
